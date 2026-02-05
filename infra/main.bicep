@@ -104,9 +104,8 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
     name: appServicePlanSku
     capacity: 1
   }
-  kind: 'linux'
+  kind: 'windows'
   properties: {
-    reserved: true
   }
 }
 
@@ -121,7 +120,6 @@ resource appService 'Microsoft.Web/sites@2021-02-01' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|9.0'
       alwaysOn: !isFreeTier
       http20Enabled: true
       minTlsVersion: '1.2'
