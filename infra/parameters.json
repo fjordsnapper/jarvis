@@ -12,7 +12,7 @@
       "value": "dev"
     },
     "appServicePlanSku": {
-      "value": "B1"
+      "value": "F1"
     },
     "storageAccountSku": {
       "value": "Standard_LRS"
