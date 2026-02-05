@@ -1,1 +1,59 @@
 tmpclaude/
+
+# Azure and deployment
+.env
+.env.local
+publish/
+*.zip
+jarvis-*.zip
+
+# .NET
+bin/
+obj/
+*.dll
+*.exe
+*.so
+*.dylib
+*.class
+*.jar
+*.war
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# Visual Studio
+.vs/
+.vscode/settings.json
+*.user
+*.suo
+*.sln.docstates
+
+# Test Results
+TestResults/
+*.trx
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Azure
+local.settings.json
+
+# Application settings
+appsettings.*.json
+!appsettings.Development.json
+!appsettings.json

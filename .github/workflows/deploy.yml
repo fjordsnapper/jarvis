@@ -1,0 +1,107 @@
+name: Build and Deploy to Azure
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  PUBLISH_PATH: './publish'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+
+    - name: Publish
+      run: |
+        dotnet publish src/Jarvis.Api/Jarvis.Api.csproj \
+          --configuration Release \
+          --output ${{ env.PUBLISH_PATH }} \
+          --no-restore
+
+    - name: Create deployment package
+      run: |
+        cd ${{ env.PUBLISH_PATH }}
+        zip -r ../jarvis-${{ github.run_number }}.zip .
+        cd ..
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: jarvis-package
+        path: jarvis-${{ github.run_number }}.zip
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Azure CLI login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: jarvis-package
+
+    - name: Deploy infrastructure
+      run: |
+        az deployment group create \
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --template-file ./infra/main.bicep \
+          --parameters ./infra/parameters.json \
+          --parameters environment=prod
+      env:
+        AZURE_DEFAULTS_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+
+    - name: Deploy application to App Service
+      run: |
+        az webapp deployment source config-zip \
+          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+          --name ${{ secrets.AZURE_APP_SERVICE_NAME }} \
+          --src-path ./jarvis-${{ github.run_number }}.zip
+
+  validate:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
