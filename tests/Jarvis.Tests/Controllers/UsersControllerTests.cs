@@ -130,7 +130,7 @@ public class UsersControllerTests
         var createRequest = new CreateUserRequest
         {
             Name = "John Doe",
-            Email = "john@example.com"
+            Email = "john.doe.update@example.com"
         };
         var createResult = controller.CreateUser(createRequest);
         var createdUser = ((CreatedAtActionResult)createResult.Result).Value as User;
@@ -138,7 +138,7 @@ public class UsersControllerTests
         var updateRequest = new UpdateUserRequest
         {
             Name = "Jane Doe",
-            Email = "jane@example.com"
+            Email = "jane.doe.update@example.com"
         };
 
         // Act
@@ -152,7 +152,7 @@ public class UsersControllerTests
         var updatedUser = okResult?.Value as User;
         Assert.IsNotNull(updatedUser);
         Assert.AreEqual("Jane Doe", updatedUser.Name);
-        Assert.AreEqual("jane@example.com", updatedUser.Email);
+        Assert.AreEqual("jane.doe.update@example.com", updatedUser.Email);
     }
 
     [TestMethod]
@@ -180,8 +180,8 @@ public class UsersControllerTests
         var controller = new UsersController();
         var createRequest = new CreateUserRequest
         {
-            Name = "John Doe",
-            Email = "john@example.com"
+            Name = "Jane Smith",
+            Email = "jane.smith@example.com"
         };
         var createResult = controller.CreateUser(createRequest);
         var createdUser = ((CreatedAtActionResult)createResult.Result).Value as User;
@@ -215,8 +215,8 @@ public class UsersControllerTests
         var controller = new UsersController();
         var createRequest = new CreateUserRequest
         {
-            Name = "John Doe",
-            Email = "john@example.com"
+            Name = "Bob Wilson",
+            Email = "bob.wilson@example.com"
         };
         var createResult = controller.CreateUser(createRequest);
         var createdUser = ((CreatedAtActionResult)createResult.Result).Value as User;
