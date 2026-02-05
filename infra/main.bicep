@@ -25,6 +25,7 @@ var appServicePlanName = '${baseName}-asp-${environment}'
 var appServiceName = '${baseName}-app-${environment}'
 var appInsightsName = '${baseName}-appinsights-${environment}'
 var keyVaultName = '${baseName}-kv-${uniqueSuffix}'
+var isFreeTier = appServicePlanSku == 'F1'
 
 // Application Insights
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -121,7 +122,7 @@ resource appService 'Microsoft.Web/sites@2021-02-01' = {
     httpsOnly: true
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|9.0'
-      alwaysOn: true
+      alwaysOn: !isFreeTier
       http20Enabled: true
       minTlsVersion: '1.2'
       appSettings: [
